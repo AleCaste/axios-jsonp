@@ -1,15 +1,43 @@
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /*
+@ Install browserify:
+npm install --global browserify
+@ Go to:
+D:/git_repos/axios-jsonp
+@ Run:
+browserify ./lib/index.jsonp.browser.js -o ./dist/index.jsonp.js
+@ To uglify, run:
+uglifyjs ./dist/index.jsonp.js --compress --mangle --verbose -o ./dist/index.jsonp.min.js
+*/ 
+window.jsonpAdapter = require('./index.jsonp.module.js');
+
+
+
+
+
+},{"./index.jsonp.module.js":2}],2:[function(require,module,exports){
+/*
+
+See: D:\git_repos\axios-jsonp\lib\index.secf.module.js
+
 NOTE: this needs .indexOf and Promises support
 */
 
   var cid = 1;
-  var buildQueryString = function(params) {
-    var result = '';
-    var io1 = 0 - 1, ko1, vo1;
-    for (ko1 in params) { io1++; vo1 = params[ko1];
-      result += ((io1==0)?'':'&')+encodeURIComponent(ko1)+'='+encodeURIComponent(vo1);
+  var buildQueryString = function(obj, prefix) {
+    // See: https://stackoverflow.com/a/1714899/3621841
+    // See: https://github.com/friday/query-string-encode
+    // See: https://github.com/LeaVerou/bliss/issues/213#issuecomment-345837501
+    var str = [], p;
+    for(p in obj) {
+      if (obj.hasOwnProperty(p)) {
+        var k = prefix ? prefix + "[" + p + "]" : p, v = obj[p];
+        str.push((v !== null && typeof v === "object") ?
+          buildQueryString(v, k) :
+          encodeURIComponent(k) + "=" + encodeURIComponent(v));
+      }
     }
-    return result;
+    return str.join("&");
   };
   module.exports = function jsonpAdapter(config) {
   //window.jsonpAdapter = function(config) {
@@ -85,3 +113,4 @@ NOTE: this needs .indexOf and Promises support
         
     });
   };
+},{}]},{},[1]);
